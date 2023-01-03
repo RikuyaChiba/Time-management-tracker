@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  web:
+    build: 
+      dockerfile: dockerfile/web/Dockerfile
+      context: .
+    ports:
+      - '50010:80'
+    depends_on:
+      - app
+    volumes:
+      - type: bind
+        source: ./src
+        target: /app
+    working_dir: /app
+        
+  app:
+    build: 
+      dockerfile: dockerfile/app/Dockerfile
+      context: .
+    ports:
+     - "9010:9000"
+    volumes:
+      - type: bind
+        source: ./src
+        target: /app
+    working_dir: /app
+
+  # db
+  db:
+    build:
+      dockerfile: dockerfile/db/Dockerfile
+      context: .
+    ports:
+      - 33080:3306
+    environment:
+      MYSQL_DATABASE: time_mg_tracker
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user 
+      MYSQL_USER_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - type: volume
+        source: mysql-volume
+        target: /var/lib/mysql
+      - type: bind
+        source: ./dockerfile/db/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        
+volumes:
+  mysql-volume:
