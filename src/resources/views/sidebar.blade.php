@@ -20,6 +20,14 @@
           Statistics
         </h5>
       </li>
+      <li class="sidebar__item">
+        <h4 class="material-symbols-outlined">
+          delete
+        </h4>
+        <h5 class="ms-3">
+          Archive
+        </h5>
+      </li>
     </ul>
   </div>
 @endsection
