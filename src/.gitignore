@@ -2,8 +2,10 @@
 /public/build
 /public/hot
 /public/storage
+/public/js/firebase.js
 /storage/*.key
 /vendor
+/dist/bundle.js
 .env
 .env.backup
 .env.production

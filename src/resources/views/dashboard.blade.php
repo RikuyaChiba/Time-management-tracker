@@ -2,6 +2,4 @@
 
 @section('title', 'dashboard')
 
-@section('contents')
-
-@endsection
+<script type="module" src="/js/firebase.js"></script>
