@@ -125,6 +125,22 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'firebase_api_key' => env('FIREBASE_API_KEY', ''),
+
+    'firebase_auth_domain' => env('FIREBASE_AUTH_DOMAIN', ''),
+
+    'firebase_database_url' => env('FIREBASE_DATABASE_URL', ''),
+
+    'firebase_project_id' => env('FIREBASE_PROJECT_ID', ''),
+
+    'firebase_storage_bucket' => env('FIREBASE_STORAGE_BUCKET', ''),
+
+    'firebase_messaging_sender_id' => env('FIREBASE_MESSAGING_SENDER_ID', ''),
+
+    'firebase_app_id' => env('FIREBASE_APP_ID', ''),
+
+    'firebase_measurement_id' => env('FIREBASE_MEASUREMENT_ID', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver
