@@ -5,6 +5,7 @@
   border: 0;
   outline: 0;
   list-style: none;
+  color: var(--color-dark-blue);
 }
 
 :root {
@@ -12,11 +13,21 @@
   --color-text-gray: #C7C5C6;
   --color-dark-blue: #36455F;
   --color-thin-gray: #F0F5F9;
-  --color-light-gray: #E7EAF9;
+  --color-little-dark-gray: #d4dcf2;
+  --color-light-lavender: #e8ecf8;
+  --color-lavender: #c1ccec;
   --purple: #6D5DD6;
   --green: #7CB678;
   --yellow: #FFD272;
   --pink: #F49EBB;
+  --btn-primary: #FC6111;
+
+  --page-margin-top: 4rem;
+}
+
+.btn {
+  background-color: var(--btn-primary);
+  border: var(--btn-primary);
 }
 
 
@@ -27,7 +38,6 @@
   width: 18vw;
   height: 100vh;
   background-color: var(--color-thin-gray);
-  color: var(--color-dark-blue);
 }
 
 .sidebar__items {
@@ -42,4 +52,66 @@
   display: flex;
   vertical-align: center;
   margin-bottom: 1.5rem;
+}
+
+/* ========= DASHBOARD ======== */
+
+.dashboard {
+  margin-top: var(--page-margin-top);
+}
+
+.todo__item {
+  padding-top: 1rem;
+  border-radius: 5px;
+  color: var(--color-text-gray);
+  background-color: var(--color-thin-gray);
+  transition: 0.3s;
+}
+
+.todo__item:hover {
+  background-color: var(--color-light-lavender);
+}
+
+.todo__header {
+  margin: 0 1rem;
+}
+
+.todo__card {
+  margin: 0 1rem 1rem 1rem;
+  border: none;
+}
+
+.todo__textarea {
+  resize: none;
+}
+
+.todo__btn {
+  display: none;
+}
+
+.todo__add-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: .2rem 0;
+  border-radius: 5px;
+  background-color: var(--color-little-dark-gray);
+  transition: 0.2s;
+}
+
+.todo__add-button:hover {
+  background-color: var(--color-lavender);
+  cursor: pointer;
+}
+
+.todo__add-icon {
+  margin-right: .2rem;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.todo__add-text {
+  font-size: 14px;
 }
