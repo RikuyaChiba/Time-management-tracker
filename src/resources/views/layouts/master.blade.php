@@ -20,12 +20,15 @@
         rel="stylesheet">
   {{-- stylesheet --}}
   <link rel="stylesheet" href="/css/style.css">
-
+  {{-- jquery --}}
+  <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js" integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo=" crossorigin="anonymous"></script>
 </head>
 <body>
-  @section('navbar')
-    @include('sidebar')
-  @show
-  @yield('contents')
+  <div class="d-flex">
+    @section('navbar')
+      @include('sidebar')
+    @show
+    @yield('contents')
+  </div>
 </body>
 </html>
