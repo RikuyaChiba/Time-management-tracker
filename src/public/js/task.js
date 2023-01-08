@@ -66,8 +66,8 @@ const saveTask = (db) => {
   // When todo save button is clicked
   $save_btns.click(function() {
     const $clicked_element_id = $(this).attr('id');
-    const id_num = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
-    const $todo_textarea = $('#todoTextArea' + id_num);
+    const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
+    const $todo_textarea = $('#todoTextArea' + task_id);
 
     // Get task data to store db
     const $section_id = $(this).parents("[id *= 'quadrantSection']").data('section');
@@ -89,14 +89,14 @@ const saveTask = (db) => {
     };
 
     // Store date into firebase db
-    set(ref(db, 'tasks/' + 1), attributes);
+    set(ref(db, 'tasks/' + task_id), attributes);
   });
 }
 
-const addCard = (data, $todo_add_btn) => {
+const addCard = (db, $todo_add_btn) => {
   // taskテーブルの最新のidを取得
-  const last_task_id = data.length;
   $todo_add_btn.click(function() {
+    const last_card_id = $("[id *= 'todoCard']").length;
     const $card = $(
       `<div class="todo__card card">
         <div class="card-body">
@@ -107,13 +107,14 @@ const addCard = (data, $todo_add_btn) => {
     );
     const $textarea = $($card).find('textarea');
     const $save_btn = $($card).find('button');
-    $card.attr('id', 'todoCard' + (last_task_id + 1));
-    $textarea.attr('id', 'todoTextArea' + (last_task_id + 1));
-    $save_btn.attr('id', 'saveBtn' + (last_task_id + 1));
+    $card.attr('id', 'todoCard' + (last_card_id + 1));
+    $textarea.attr('id', 'todoTextArea' + (last_card_id + 1));
+    $save_btn.attr('id', 'saveBtn' + (last_card_id + 1));
     $todo_add_btn.before($card);
 
-    // NOTE: テキストエリアを新しく作ったので、テキストエリアの取得($todo_text_areas)を最新情報にする
+    // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
     displaySaveButton();
+    saveTask(db);
   });
 }
 
@@ -133,7 +134,7 @@ const runAsync = async (db, task_ref, task_contents, $todo_add_btn) => {
     const data = await getRefData(task_ref, task_contents);
     init(data, $todo_add_btn);
     saveTask(db);
-    addCard(data, $todo_add_btn);
+    addCard(db, $todo_add_btn);
     displaySaveButton();
   } catch(err) {
     console.log(err);
