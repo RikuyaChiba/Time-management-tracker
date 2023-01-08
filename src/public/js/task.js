@@ -4,16 +4,10 @@ import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebase
 
 import { firebaseConfig, app, db} from './firebase.js';
 
-const toDoubleDigits = (num) => {
-  num += "";
-  if(num.length === 1) {
-    num = "0" + num;
-  }
-  return num;
-};
 
 // 特定テーブルのコンテンツを配列として取得
-const getRefData = async (task_ref, task_contents) => {
+const getRefData = async () => {
+  let task_ref = ref(db, 'tasks/');
   return new Promise(resolve => {
     onValue(task_ref, (snapshot) => {
       const data = snapshot.val();
@@ -30,8 +24,6 @@ const getRefData = async (task_ref, task_contents) => {
 
 // DBに存在するデータを表示するためのカードを作成する
 const createCard = (section_data, section_id) => {
-  let task_contents = section_data.map(data => data.content);
-  let task_ids = section_data.map(data => data.id);
   const $todo_add_btn = $("#todoAddButton" + section_id);
   section_data.map((data) => {
     const $new_card = $(
@@ -53,8 +45,8 @@ const createCard = (section_data, section_id) => {
   });
 }
 
-// カード作成
-const init = (data) => {
+// ロード処理
+const load = (data) => {
   const section_ids = {
     first_section: 1,
     second_section: 2,
@@ -85,22 +77,76 @@ const init = (data) => {
   const percent_data = [
     {
       section_id: 1,
-      section_percent: first_percent
+      section_percent: first_percent,
+      color: '#6D5DD6',
     },
     {
       section_id: 2,
-      section_percent: second_percent
+      section_percent: second_percent,
+      color: '#7CB678',
     },
     {
       section_id: 3,
-      section_percent: third_percent
+      section_percent: third_percent,
+      color: '#FFD272',
     },
     {
       section_id: 4,
-      section_percent: fourth_percent
+      section_percent: fourth_percent,
+      color: '#F49EBB',
     }
   ]
-  displayPercent(percent_data);
+  displayPercent(percent_data); // パーセント表示
+  displayProgressBar(percent_data); // プログレスバー表示
+}
+
+const getPercentData = (data) => {
+  const section_ids = {
+    first_section: 1,
+    second_section: 2,
+    third_section: 3,
+    fourth_section: 4
+  }
+  const first_section_items = data.filter(data => data.section_id === section_ids.first_section);
+  const second_section_items = data.filter(data => data.section_id === section_ids.second_section);
+  const third_section_items = data.filter(data => data.section_id === section_ids.third_section);
+  const fourth_section_items = data.filter(data => data.section_id === section_ids.fourth_section);
+  const section_items = {
+    first_section: first_section_items,
+    second_section: second_section_items,
+    third_section: third_section_items,
+    fourth_section: fourth_section_items
+  };
+
+  // パーセント表示
+  const first_percent = calcPercent(data, section_items.first_section);
+  const second_percent = calcPercent(data, section_items.second_section);
+  const third_percent = calcPercent(data, section_items.third_section);
+  const fourth_percent = calcPercent(data, section_items.fourth_section);
+  const percent_data = [
+    {
+      section_id: 1,
+      section_percent: first_percent,
+      color: '#6D5DD6',
+    },
+    {
+      section_id: 2,
+      section_percent: second_percent,
+      color: '#7CB678',
+    },
+    {
+      section_id: 3,
+      section_percent: third_percent,
+      color: '#FFD272',
+    },
+    {
+      section_id: 4,
+      section_percent: fourth_percent,
+      color: '#F49EBB',
+    }
+  ]
+
+  return percent_data;
 }
 
 const calcPercent = (data, section_data) => {
@@ -116,10 +162,37 @@ const displayPercent = (percent_data) => {
   });
 }
 
+const displayProgressBar = (percent_data) => {
+  percent_data.map(({section_id, section_percent, color}) => {
+    const $progress_base = $('#todoProgressBar' + section_id);
+    let $progress_percent = $progress_base.find('div');
+    const is_elem_exists = $progress_percent.length;
+    console.log(is_elem_exists);
+    if (is_elem_exists == false) {
+      $progress_percent = $('<div>');
+    }
+    $progress_base.css('background-color', '#e8ecf8');
+    $progress_base.append($progress_percent);
+    $progress_percent.css('background-color', color);
+    $progress_percent.css('width', section_percent + '%');
+    $progress_percent.css('height', '1rem');
+    $progress_percent.css('border-radius', '20px');
+
+  });
+}
+
+const toDoubleDigits = (num) => {
+  num += "";
+  if(num.length === 1) {
+    num = "0" + num;
+  }
+  return num;
+};
+
 const saveTask = (db) => {
   const $save_btns = $('.todo__btn');
   // When todo save button is clicked
-  $save_btns.click(function() {
+  $save_btns.click(async function() {
     const $clicked_element_id = $(this).attr('id');
     const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
     const $todo_textarea = $('#todoTextArea' + task_id);
@@ -145,6 +218,12 @@ const saveTask = (db) => {
 
     // Store date into firebase db
     set(ref(db, 'tasks/' + task_id), attributes);
+    const data = await getRefData();
+    const percent_data = getPercentData(data);
+    // パーセントを更新
+    displayPercent(percent_data);
+    // プログレスバーを更新
+    displayProgressBar(percent_data);
   });
 }
 
@@ -184,10 +263,10 @@ const addCard = (db, $todo_add_btns) => {
   });
 }
 
-const runAsync = async (db, task_ref, task_contents, $todo_add_btns) => {
+const runAsync = async (db, $todo_add_btns) => {
   try {
-    const data = await getRefData(task_ref, task_contents);
-    init(data);
+    const data = await getRefData();
+    load(data);
     saveTask(db);
     addCard(db, $todo_add_btns);
     displaySaveButton();
@@ -200,10 +279,7 @@ $(function(){
   // Process when todo add button is clicked
   let $todo_add_btns = $("[id *= 'todoAddButton']");
 
-  // データを読む
-  var task_ref = ref(db, 'tasks/');
-  let task_contents;
-  runAsync(db, task_ref, task_contents, $todo_add_btns);
+  runAsync(db, $todo_add_btns);
 
   // TODO: blurでもイベントが発火するようにする
   // $todo_textarea.blur(function() {
