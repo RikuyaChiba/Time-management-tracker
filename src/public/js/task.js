@@ -277,11 +277,5 @@ const runAsync = async (db, $todo_add_btns) => {
 $(function(){
   // Process when todo add button is clicked
   let $todo_add_btns = $("[id *= 'todoAddButton']");
-
   runAsync(db, $todo_add_btns);
-
-  // TODO: blurでもイベントが発火するようにする
-  // $todo_textarea.blur(function() {
-    //   $save_btn.css({'display': 'none'});
-    // })
 });
