@@ -54,8 +54,7 @@ const createCard = (section_data, section_id) => {
 }
 
 // カード作成
-const init = (data, $todo_add_btn) => {
-  const task_contents = data.map(data => data.content);
+const init = (data) => {
   const section_ids = {
     first_section: 1,
     second_section: 2,
@@ -150,7 +149,7 @@ const addCard = (db, $todo_add_btns) => {
 const runAsync = async (db, task_ref, task_contents, $todo_add_btns) => {
   try {
     const data = await getRefData(task_ref, task_contents);
-    init(data, $todo_add_btns);
+    init(data);
     saveTask(db);
     addCard(db, $todo_add_btns);
     displaySaveButton();
