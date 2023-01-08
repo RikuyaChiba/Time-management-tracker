@@ -1,7 +1,10 @@
 <div id={{ "quadrantSection" . $section }} class="col-3" data-section={{ $section }}>
   <div class="todo__section">
-    <span class="todo__title">{{ $title }}</span>
-    <span id={{ "sectionPercent" . $section }}></span>
+    <div class="todo__section-header">
+      <span class="todo__title">{{ $title }}</span>
+      <span id={{ "sectionPercent" . $section }} class="todo__percent"></span>
+    </div>
+    <div id={{ "todoProgressBar" . $section }} class="todo__progress-bar"></div>
   </div>
   <div class="todo__item">
     <div class="todo__header">
