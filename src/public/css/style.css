@@ -60,10 +60,17 @@
   margin-top: var(--page-margin-top);
 }
 
-.todo__section {
+.todo__section-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: .5rem;
+}
+
+.todo__progress-bar {
+  width: 100%;
+  height: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 20px;
 }
 
 .todo__item {
