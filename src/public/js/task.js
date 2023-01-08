@@ -220,10 +220,9 @@ const saveTask = (db) => {
     set(ref(db, 'tasks/' + task_id), attributes);
     const data = await getRefData();
     const percent_data = getPercentData(data);
-    // パーセントを更新
-    displayPercent(percent_data);
-    // プログレスバーを更新
-    displayProgressBar(percent_data);
+
+    displayPercent(percent_data); // パーセント情報を更新
+    displayProgressBar(percent_data); // プログレスバー情報を更新
   });
 }
 
