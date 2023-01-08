@@ -60,6 +60,12 @@
   margin-top: var(--page-margin-top);
 }
 
+.todo__section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
 .todo__item {
   padding-top: 1rem;
   border-radius: 5px;

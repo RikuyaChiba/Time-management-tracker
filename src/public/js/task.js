@@ -54,8 +54,7 @@ const createCard = (section_data, section_id) => {
 }
 
 // カード作成
-const init = (data, $todo_add_btn) => {
-  const task_contents = data.map(data => data.content);
+const init = (data) => {
   const section_ids = {
     first_section: 1,
     second_section: 2,
@@ -77,6 +76,44 @@ const init = (data, $todo_add_btn) => {
   createCard(section_items.second_section, section_ids.second_section);
   createCard(section_items.third_section, section_ids.third_section);
   createCard(section_items.fourth_section, section_ids.fourth_section);
+
+  // パーセント表示
+  const first_percent = calcPercent(data, section_items.first_section);
+  const second_percent = calcPercent(data, section_items.second_section);
+  const third_percent = calcPercent(data, section_items.third_section);
+  const fourth_percent = calcPercent(data, section_items.fourth_section);
+  const percent_data = [
+    {
+      section_id: 1,
+      section_percent: first_percent
+    },
+    {
+      section_id: 2,
+      section_percent: second_percent
+    },
+    {
+      section_id: 3,
+      section_percent: third_percent
+    },
+    {
+      section_id: 4,
+      section_percent: fourth_percent
+    }
+  ]
+  displayPercent(percent_data);
+}
+
+const calcPercent = (data, section_data) => {
+  let percent = (section_data.length / data.length) * 100;
+  let rounded_percent = Math.round(percent);
+  return rounded_percent;
+}
+
+const displayPercent = (percent_data) => {
+  percent_data.map(({section_id, section_percent}) => {
+    const target_element = $('#sectionPercent' + section_id);
+    target_element.html(section_percent + '%');
+  });
 }
 
 const saveTask = (db) => {
@@ -150,7 +187,7 @@ const addCard = (db, $todo_add_btns) => {
 const runAsync = async (db, task_ref, task_contents, $todo_add_btns) => {
   try {
     const data = await getRefData(task_ref, task_contents);
-    init(data, $todo_add_btns);
+    init(data);
     saveTask(db);
     addCard(db, $todo_add_btns);
     displaySaveButton();
