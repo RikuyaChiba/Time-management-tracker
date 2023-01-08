@@ -61,18 +61,6 @@ const init = (data, $todo_add_btn) => {
   }
 }
 
-const displaySaveButton = () => {
-  const $todo_textareas = $('.todo__textarea');
-  $todo_textareas.focus(function() {
-    // フォーカスされたtextareaのsave_btnのidを取得す0る
-    const $focused_textarea = $('.todo__textarea:focus');
-    const $element_id = $focused_textarea.attr('id');
-    const id_num = $element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
-    const $save_btn = $('#saveBtn' + id_num);
-    $save_btn.css({'display': 'block'});
-  });
-}
-
 const saveTask = (db) => {
   const $save_btns = $('.todo__btn');
   // When todo save button is clicked
@@ -123,6 +111,20 @@ const addCard = (data, $todo_add_btn) => {
     $textarea.attr('id', 'todoTextArea' + (last_task_id + 1));
     $save_btn.attr('id', 'saveBtn' + (last_task_id + 1));
     $todo_add_btn.before($card);
+
+    // NOTE: テキストエリアを新しく作ったので、テキストエリアの取得($todo_text_areas)を最新情報にする
+    displaySaveButton();
+  });
+}
+
+const displaySaveButton = () => {
+  const $todo_textareas = $('.todo__textarea');
+  $todo_textareas.focus(function() {
+    // フォーカスされたtextareaのsave_btnのidを取得す0る
+    const $element_id = $(this).attr('id');
+    const id_num = $element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
+    const $save_btn = $('#saveBtn' + id_num);
+    $save_btn.css({'display': 'block'});
   });
 }
 
@@ -152,4 +154,3 @@ $(function(){
     //   $save_btn.css({'display': 'none'});
     // })
 });
-
