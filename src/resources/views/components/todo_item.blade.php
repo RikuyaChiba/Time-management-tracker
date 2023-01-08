@@ -1,6 +1,7 @@
 <div id={{ "quadrantSection" . $section }} class="col-3" data-section={{ $section }}>
-  <div class="todo__title">
-    <p> {{ $title }}</p>
+  <div class="todo__section">
+    <span class="todo__title">{{ $title }}</span>
+    <span id={{ "sectionPercent" . $section }}></span>
   </div>
   <div class="todo__item">
     <div class="todo__header">
