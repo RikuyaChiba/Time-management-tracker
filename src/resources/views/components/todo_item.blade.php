@@ -6,7 +6,7 @@
     <div class="todo__header">
       <h5>Todo</h5>
     </div>
-    <div id="todoAddButton" class="todo__add-button">
+    <div id={{ "todoAddButton" . $section }} class="todo__add-button">
       <span class="todo__add-icon material-symbols-outlined">add</span>
       <span class="todo__add-text">Add another card</span>
     </div>
