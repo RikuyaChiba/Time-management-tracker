@@ -107,13 +107,18 @@ const createCard = (section_data, section_id) => {
     const $new_card = $(
       `<div class="todo__card card">
         <div class="card-body">
+          <div class="todo__trash-icon d-flex justify-content-end mb-1">
+            <span class="material-symbols-outlined">delete</span>
+          </div>
           <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
           <button class="todo__btn btn btn-primary mt-4"></button>
         </div>
       </div>`
     );
+    const $trash = $($new_card).find('span');
     const $textarea = $($new_card).find('textarea');
     const $save_btn = $($new_card).find('button');
+    $trash.attr('id', 'trashIcon' + data.id);
     $new_card.attr('id', 'todoCard' + data.id);
     $textarea.attr('id', 'todoTextArea' + data.id);
     $textarea.val(data.content);
@@ -300,19 +305,24 @@ const displaySaveButton = () => {
 }
 
 const addCard = (db, $todo_add_btns) => {
-  // taskテーブルの最新のidを取得
   $todo_add_btns.click(function() {
+    // taskテーブルの最新のidを取得
     const last_card_id = $("[id *= 'todoCard']").length;
     const $card = $(
       `<div class="todo__card card">
         <div class="card-body">
+          <div class="d-flex justify-content-end mb-1">
+            <span class="material-symbols-outlined">delete</span>
+          </div>
           <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
           <button class="todo__btn btn btn-primary mt-4">保存</button>
         </div>
       </div>`
     );
+    const $trash = $($card).find('span');
     const $textarea = $($card).find('textarea');
     const $save_btn = $($card).find('button');
+    $trash.attr('id', 'trashIcon' + (last_card_id + 1));
     $card.attr('id', 'todoCard' + (last_card_id + 1));
     $textarea.attr('id', 'todoTextArea' + (last_card_id + 1));
     $save_btn.attr('id', 'saveBtn' + (last_card_id + 1));
@@ -324,6 +334,10 @@ const addCard = (db, $todo_add_btns) => {
   });
 }
 
+const deleteCard = () => {
+
+}
+
 const runAsync = async (db, $todo_add_btns) => {
   try {
     const data = await getRefData();
@@ -331,6 +345,7 @@ const runAsync = async (db, $todo_add_btns) => {
     saveTask(db);
     addCard(db, $todo_add_btns);
     displaySaveButton();
+    deleteCard();
   } catch(err) {
     console.log(err);
   }
