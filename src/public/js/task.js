@@ -334,8 +334,12 @@ const addCard = (db, $todo_add_btns) => {
   });
 }
 
-const deleteCard = () => {
-
+const deleteCard = (db) => {
+  const trash__icons = $("[id *= 'trashIcon']");
+  trash__icons.click(function() {
+    let $parent = $(this).parents(".todo__card");
+    $parent.remove();
+  });
 }
 
 const runAsync = async (db, $todo_add_btns) => {
@@ -345,7 +349,7 @@ const runAsync = async (db, $todo_add_btns) => {
     saveTask(db);
     addCard(db, $todo_add_btns);
     displaySaveButton();
-    deleteCard();
+    deleteCard(db);
   } catch(err) {
     console.log(err);
   }
