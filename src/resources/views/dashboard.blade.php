@@ -4,10 +4,13 @@
 
 @section('contents')
   <div class="container px-5 dashboard">
-    <div class="row mb-5">
+    <div class="row">
       <h4>Overview</h4>
     </div>
     <div class="row gx-5 todo">
+      <div class="d-flex justify-content-end">
+        <h6 id="todoPeriod" class="mb-4"></h6>
+      </div>
       {{-- 1 area --}}
       @component('components.todo_item', [
         'title' => '第一領域',
