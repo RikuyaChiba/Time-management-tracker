@@ -311,7 +311,7 @@ const addCard = (db, $todo_add_btns) => {
     const $card = $(
       `<div class="todo__card card">
         <div class="card-body">
-          <div class="d-flex justify-content-end mb-1">
+          <div class="todo__trash-icon d-flex justify-content-end mb-1">
             <span class="material-symbols-outlined">delete</span>
           </div>
           <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
@@ -331,6 +331,7 @@ const addCard = (db, $todo_add_btns) => {
     // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
     displaySaveButton();
     saveTask(db);
+    deleteCard(db);
   });
 }
 
