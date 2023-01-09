@@ -11,8 +11,17 @@ const getRefData = async () => {
   return new Promise(resolve => {
     onValue(task_ref, (snapshot) => {
       const data = snapshot.val();
+
       // NOTE: DBにはないemptyの値が入ってしまうので、emptyを排除する形で暫定対応
       let filter_data = data.filter(Boolean);
+      const this_week = getThisWeekDate();
+      const parse_start_date = Date.parse(this_week.start_date.full_date.toString());
+      const parse_end_date = Date.parse(this_week.end_date.full_date.toString());
+      // 当日の1週間のデータのものだけ抽出
+      filter_data = filter_data.filter((data) => {
+        const parse_created_at = Date.parse(data.created_at);
+        return (parse_created_at >= parse_start_date) && (parse_created_at <= parse_end_date);
+      });
       // idを付与
       filter_data.map((data, index) => {
         data.id = index + 1;
@@ -20,6 +29,60 @@ const getRefData = async () => {
       resolve(filter_data);
     });
   });
+}
+
+const toDoubleDigits = (num) => {
+  num += "";
+  if(num.length === 1) {
+    num = "0" + num;
+  }
+  return num;
+};
+
+// 1週間の月曜日、日曜日の日付を取得
+const getThisWeekDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const date = today.getDate();
+  const day_num = today.getDay();
+  const this_monday = date - day_num + 1;
+  const this_sunday = this_monday + 6;
+  // 月曜日の年月日
+  const start_date = new Date(year, month, this_monday);
+  const start_date_day = start_date.getDate();
+  // 日曜日の年月日
+  const end_date = new Date(year, month, this_sunday);
+  const end_date_day = end_date.getDate();
+
+  const this_week = {
+    start_date: {
+      full_date: start_date,
+      year: year,
+      month: toDoubleDigits(month + 1),
+      date: toDoubleDigits(start_date_day)
+    },
+    end_date: {
+      full_date: end_date,
+      year: year,
+      month: toDoubleDigits(month + 1),
+      date: toDoubleDigits(end_date_day)
+    }
+  }
+  return this_week;
+}
+
+// 1週間の日付を取得
+const formatWeek = (data) => {
+  return `${data.start_date.year}-${data.start_date.month}-${data.start_date.date} ~ ${data.end_date.year}-${data.end_date.month}-${data.end_date.date}`;
+}
+
+// 1週間の日付を画面に表示する
+const displayWeek = () => {
+  const this_week = getThisWeekDate();
+  const format_week = formatWeek(this_week);
+  const target_element = $('#todoPeriod');
+  target_element.html(format_week);
 }
 
 // DBに存在するデータを表示するためのカードを作成する
@@ -98,6 +161,7 @@ const load = (data) => {
   ]
   displayPercent(percent_data); // パーセント表示
   displayProgressBar(percent_data); // プログレスバー表示
+  displayWeek(); // 1週間の表示
 }
 
 const getPercentData = (data) => {
@@ -167,7 +231,6 @@ const displayProgressBar = (percent_data) => {
     const $progress_base = $('#todoProgressBar' + section_id);
     let $progress_percent = $progress_base.find('div');
     const is_elem_exists = $progress_percent.length;
-    console.log(is_elem_exists);
     if (is_elem_exists == false) {
       $progress_percent = $('<div>');
     }
@@ -181,13 +244,6 @@ const displayProgressBar = (percent_data) => {
   });
 }
 
-const toDoubleDigits = (num) => {
-  num += "";
-  if(num.length === 1) {
-    num = "0" + num;
-  }
-  return num;
-};
 
 const saveTask = (db) => {
   const $save_btns = $('.todo__btn');
@@ -200,20 +256,12 @@ const saveTask = (db) => {
     // Get task data to store db
     const $section_id = $(this).parents("[id *= 'quadrantSection']").data('section');
     const $content = $todo_textarea.val();
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = toDoubleDigits(today.getMonth() + 1);
-    const day = toDoubleDigits(today.getDate());
-    const hours = today.getHours();
-    const minutes = today.getMinutes();
-    const seconds = today.getSeconds();
-    const format_created_at =
-      `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    const today = (new Date()).toString(); // Date型の状態だとDBに保存できないので、String型に変換
 
     const attributes = {
       section_id: $section_id,
       content: $content,
-      created_at: format_created_at
+      created_at: today
     };
 
     // Store date into firebase db
