@@ -4,14 +4,29 @@ import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebase
 
 import { firebaseConfig, app, db} from './firebase.js';
 
+const setData = async (db, task_id, attributes) => {
+  return new Promise((resolve) => {
+    set(ref(db, 'tasks/' + task_id), attributes)
+    resolve();
+  });
+}
 
 // 特定テーブルのコンテンツを配列として取得
 const getRefData = async () => {
   let task_ref = ref(db, 'tasks/');
   return new Promise(resolve => {
-    onValue(task_ref, (snapshot) => {
+    onValue(task_ref, async (snapshot) => {
       const data = snapshot.val();
 
+      // データがない場合の処理
+      if (data === null) {
+        const attributes = {
+          section_id: 1,
+          content: `task1`,
+          created_at: (new Date()).toString()
+        };
+        await setData(db, 1, attributes);
+      }
       // NOTE: DBにはないemptyの値が入ってしまうので、emptyを排除する形で暫定対応
       let filter_data = data.filter(Boolean);
       const this_week = getThisWeekDate();
@@ -243,7 +258,6 @@ const displayProgressBar = (percent_data) => {
 
   });
 }
-
 
 const saveTask = (db) => {
   const $save_btns = $('.todo__btn');
