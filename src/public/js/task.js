@@ -1,6 +1,6 @@
 // HACK: module形式で使えるようにする
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
+import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
 
 import { firebaseConfig, app, db} from './firebase.js';
 
@@ -335,10 +335,15 @@ const addCard = (db, $todo_add_btns) => {
   });
 }
 
+const deleteData = (db, task_id) => {
+  remove(ref(db, 'tasks/' + task_id));
+}
+
 const deleteCard = (db) => {
   const trash__icons = $("[id *= 'trashIcon']");
   trash__icons.click(function() {
     let $parent = $(this).parents(".todo__card");
+    let $textarea = $parent.find('textarea');
     $parent.remove();
   });
 }
