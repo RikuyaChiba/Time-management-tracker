@@ -30,6 +30,11 @@
   border: var(--btn-primary);
 }
 
+/* ========= SIDEBAR ======== */
+.card-body {
+  padding: .5rem 1rem 1rem 1rem;
+}
+
 
 /* ========= SIDEBAR ======== */
 
@@ -92,6 +97,10 @@
 .todo__card {
   margin: 0 1rem 1rem 1rem;
   border: none;
+}
+
+.todo__trash-icon:hover {
+  cursor: pointer;
 }
 
 .todo__textarea {
