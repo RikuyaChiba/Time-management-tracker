@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DashBoardController;
+use App\Http\Controllers\StatisticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,4 @@ use App\Http\Controllers\DashBoardController;
 */
 
 Route::get('/', [DashBoardController::class, 'index'])->name('dashboard');
+Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics');
