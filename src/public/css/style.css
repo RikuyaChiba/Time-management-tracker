@@ -25,6 +25,10 @@
   --page-margin-top: 4rem;
 }
 
+a {
+  text-decoration: none;
+}
+
 .btn {
   background-color: var(--btn-primary);
   border: var(--btn-primary);
@@ -136,4 +140,10 @@
 
 .todo__add-text {
   font-size: 14px;
+}
+
+/* ========= STATISTICS ======== */
+
+.statistics {
+  margin-top: var(--page-margin-top);
 }
