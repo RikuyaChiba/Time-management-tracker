@@ -257,7 +257,9 @@ const displayProgressBar = (percent_data) => {
     $progress_base.css('background-color', '#e8ecf8');
     $progress_base.append($progress_percent);
     $progress_percent.css('background-color', color);
-    $progress_percent.css('width', section_percent + '%');
+    $progress_percent.animate({
+      width: section_percent + '%'
+    }, 900);
     $progress_percent.css('height', '1rem');
     $progress_percent.css('border-radius', '20px');
 
