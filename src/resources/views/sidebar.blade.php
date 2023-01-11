@@ -4,7 +4,7 @@
       <h3>TM tracker</h3>
     </div>
     <ul class="sidebar__items">
-      <li>
+      <li id="dashBoard">
         <a href="{{ route('dashboard') }}" class="sidebar__item">
           <h4 class="material-symbols-outlined">
             dashboard
@@ -14,7 +14,7 @@
           </h5>
         </a>
       </li>
-      <li class="sidebar__item">
+      <li>
         <a href="{{ route('statistics') }}" class="sidebar__item">
           <h4 class="material-symbols-outlined">
             leaderboard
@@ -24,7 +24,7 @@
           </h5>
         </a>
       </li>
-      <li class="sidebar__item">
+      <li>
         <a href="#" class="sidebar__item">
           <h4 class="material-symbols-outlined">
             delete
