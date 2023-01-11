@@ -324,11 +324,14 @@ const addCard = (db, $todo_add_btns) => {
     const $trash = $($card).find('span');
     const $textarea = $($card).find('textarea');
     const $save_btn = $($card).find('button');
+    const fade_in_speed = 700;
     $trash.attr('id', 'trashIcon' + (last_card_id + 1));
     $card.attr('id', 'todoCard' + (last_card_id + 1));
+    $card.css('display', 'none');
     $textarea.attr('id', 'todoTextArea' + (last_card_id + 1));
     $save_btn.attr('id', 'saveBtn' + (last_card_id + 1));
     $(this).before($card);
+    $card.fadeIn(fade_in_speed);
 
     // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
     displaySaveButton();
