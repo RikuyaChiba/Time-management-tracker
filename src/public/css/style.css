@@ -43,24 +43,26 @@ a {
 /* ========= SIDEBAR ======== */
 
 .sidebar {
-  padding: 2rem 3rem 2rem 2.2rem;
   width: 18vw;
   height: 100vh;
   background-color: var(--color-thin-gray);
+}
+
+.sidebar__logo {
+  margin: 2.2rem 2rem 2rem 2rem;
 }
 
 .sidebar__items {
   padding-left: 0;
 }
 
-.sidebar__logo {
-  margin-bottom: 2rem;
+.sidebar__item {
+  padding: 1.3rem 2rem 1.3rem 2rem;
+  transition: 0.7s;
 }
 
-.sidebar__item {
-  display: flex;
-  vertical-align: center;
-  margin-bottom: 1.5rem;
+.sidebar__item:hover {
+  background-color: var(--color-little-dark-gray);
 }
 
 /* ========= DASHBOARD ======== */
