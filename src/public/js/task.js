@@ -290,15 +290,27 @@ const saveTask = (db) => {
   });
 }
 
-const refresh = async () => {
+const refreshPercent = async () => {
   const data = await getRefData();
   const percent_data = getPercentData(data);
   displayPercent(percent_data); // パーセント情報を更新
   displayProgressBar(percent_data); // プログレスバー情報を更新
 }
 
-$(document).on('load, blur focusout', async function() {
-  refresh();
+$(document).on('load', async function() {
+  refreshPercent();
+})
+
+$(document).on('blur focusout', async function(e) {
+  // テキストエリアが未入力のとき
+  if(!$(e.target).val()) {
+    // カードを削除
+    let $card = $(e.target).closest('.card');
+    $card.remove();
+    return;
+  }
+
+  refreshPercent();
 })
 
 const addCard = (db, $todo_add_btns) => {
