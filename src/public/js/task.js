@@ -111,19 +111,15 @@ const createCard = (section_data, section_id) => {
             <span class="material-symbols-outlined">delete</span>
           </div>
           <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
-          <button class="todo__btn btn btn-primary mt-4"></button>
         </div>
       </div>`
     );
     const $trash = $($new_card).find('span');
     const $textarea = $($new_card).find('textarea');
-    const $save_btn = $($new_card).find('button');
     $trash.attr('id', 'trashIcon' + data.id);
     $new_card.attr('id', 'todoCard' + data.id);
     $textarea.attr('id', 'todoTextArea' + data.id);
     $textarea.val(data.content);
-    $save_btn.attr('id', 'saveBtn' + data.id);
-    $save_btn.html('save');
     $todo_add_btn.before($new_card);
   });
 }
@@ -267,7 +263,6 @@ const displayProgressBar = (percent_data) => {
 }
 
 const saveTask = (db) => {
-  // When todo save button is clicked
   $(document).on("keydown", "textarea", async function() {
     const $clicked_element_id = $(this).attr('id');
     const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
@@ -294,17 +289,6 @@ const saveTask = (db) => {
   });
 }
 
-const displaySaveButton = () => {
-  const $todo_textareas = $('.todo__textarea');
-  $todo_textareas.focus(function() {
-    // フォーカスされたtextareaのsave_btnのidを取得す0る
-    const $element_id = $(this).attr('id');
-    const id_num = $element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
-    const $save_btn = $('#saveBtn' + id_num);
-    $save_btn.css({'display': 'block'});
-  });
-}
-
 const addCard = (db, $todo_add_btns) => {
   $todo_add_btns.click(function() {
     // taskテーブルの最新のidを取得
@@ -316,25 +300,21 @@ const addCard = (db, $todo_add_btns) => {
             <span class="material-symbols-outlined">delete</span>
           </div>
           <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
-          <button class="todo__btn btn btn-primary mt-4">保存</button>
         </div>
       </div>`
     );
     const $trash = $($card).find('span');
     const $textarea = $($card).find('textarea');
-    const $save_btn = $($card).find('button');
     const fade_in_speed = 700;
     $trash.attr('id', 'trashIcon' + (last_card_id + 1));
     $card.attr('id', 'todoCard' + (last_card_id + 1));
     $card.css('display', 'none');
     $textarea.attr('id', 'todoTextArea' + (last_card_id + 1));
-    $save_btn.attr('id', 'saveBtn' + (last_card_id + 1));
     $(this).before($card);
     $card.fadeIn(fade_in_speed);
 
     // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
     displaySaveButton();
-    saveTask(db);
     deleteCard(db);
   });
 }
