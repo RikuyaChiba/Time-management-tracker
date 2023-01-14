@@ -290,7 +290,7 @@ const saveTask = (db) => {
   });
 }
 
-const refresh = async () => {
+const refreshPercent = async () => {
   const data = await getRefData();
   const percent_data = getPercentData(data);
   displayPercent(percent_data); // パーセント情報を更新
@@ -298,7 +298,7 @@ const refresh = async () => {
 }
 
 $(document).on('load, blur focusout', async function() {
-  refresh();
+  refreshPercent();
 })
 
 const addCard = (db, $todo_add_btns) => {
