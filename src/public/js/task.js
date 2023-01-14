@@ -263,7 +263,13 @@ const displayProgressBar = (percent_data) => {
 }
 
 const saveTask = (db) => {
-  $(document).on("keydown", "textarea", async function() {
+  $(document).on("keydown", "textarea", async function(e) {
+    // エンターキーが押されたときには、テキストエリアをフォーカスアウトする
+    const enter_key_code = 13;
+    if (e.keyCode === enter_key_code) {
+      const focused = $(':focus');
+      focused.blur();
+    }
     const $clicked_element_id = $(this).attr('id');
     const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
     const $todo_textarea = $('#todoTextArea' + task_id);
@@ -281,13 +287,19 @@ const saveTask = (db) => {
 
     // Store date into firebase db
     set(ref(db, 'tasks/' + task_id), attributes);
-    const data = await getRefData();
-    const percent_data = getPercentData(data);
-
-    displayPercent(percent_data); // パーセント情報を更新
-    displayProgressBar(percent_data); // プログレスバー情報を更新
   });
 }
+
+const refresh = async () => {
+  const data = await getRefData();
+  const percent_data = getPercentData(data);
+  displayPercent(percent_data); // パーセント情報を更新
+  displayProgressBar(percent_data); // プログレスバー情報を更新
+}
+
+$(document).on('load, blur focusout', async function() {
+  refresh();
+})
 
 const addCard = (db, $todo_add_btns) => {
   $todo_add_btns.click(function() {
@@ -314,7 +326,6 @@ const addCard = (db, $todo_add_btns) => {
     $card.fadeIn(fade_in_speed);
 
     // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
-    displaySaveButton();
     deleteCard(db);
   });
 }
@@ -338,7 +349,6 @@ const runAsync = async (db, $todo_add_btns) => {
     load(data);
     saveTask(db);
     addCard(db, $todo_add_btns);
-    displaySaveButton();
     deleteCard(db);
   } catch(err) {
     console.log(err);
