@@ -304,6 +304,7 @@ $(document).on('load', async function() {
 $(document).on('blur focusout', async function(e) {
   // テキストエリアが未入力のとき
   if(!$(e.target).val()) {
+    // カードを削除
     let $card = $(e.target).closest('.card');
     $card.remove();
     return;
