@@ -267,9 +267,8 @@ const displayProgressBar = (percent_data) => {
 }
 
 const saveTask = (db) => {
-  const $save_btns = $('.todo__btn');
   // When todo save button is clicked
-  $save_btns.click(async function() {
+  $(document).on("keydown", "textarea", async function() {
     const $clicked_element_id = $(this).attr('id');
     const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
     const $todo_textarea = $('#todoTextArea' + task_id);
