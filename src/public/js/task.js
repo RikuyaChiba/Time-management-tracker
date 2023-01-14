@@ -297,7 +297,18 @@ const refreshPercent = async () => {
   displayProgressBar(percent_data); // プログレスバー情報を更新
 }
 
-$(document).on('load, blur focusout', async function() {
+$(document).on('load', async function() {
+  refreshPercent();
+})
+
+$(document).on('blur focusout', async function(e) {
+  // テキストエリアが未入力のとき
+  if(!$(e.target).val()) {
+    let $card = $(e.target).closest('.card');
+    $card.remove();
+    return;
+  }
+
   refreshPercent();
 })
 
