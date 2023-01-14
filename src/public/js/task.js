@@ -336,6 +336,7 @@ const addCard = (db, $todo_add_btns) => {
     $textarea.attr('id', 'todoTextArea' + (last_card_id + 1));
     $(this).before($card);
     $card.fadeIn(fade_in_speed);
+    $textarea.focus();
 
     // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
     deleteCard(db);
