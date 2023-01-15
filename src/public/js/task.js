@@ -4,6 +4,13 @@ import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/
 
 import { firebaseConfig, app, db} from './firebase.js';
 
+const section_ids = {
+  first_section: 1,
+  second_section: 2,
+  third_section: 3,
+  fourth_section: 4
+}
+
 const setData = async (db, task_id, attributes) => {
   return new Promise((resolve) => {
     set(ref(db, 'tasks/' + task_id), attributes)
@@ -124,14 +131,7 @@ const createCard = (section_data, section_id) => {
   });
 }
 
-// ロード処理
-const load = (data) => {
-  const section_ids = {
-    first_section: 1,
-    second_section: 2,
-    third_section: 3,
-    fourth_section: 4
-  }
+const getPercentData = (data) => {
   const first_section_items = data.filter(data => data.section_id === section_ids.first_section);
   const second_section_items = data.filter(data => data.section_id === section_ids.second_section);
   const third_section_items = data.filter(data => data.section_id === section_ids.third_section);
@@ -175,58 +175,17 @@ const load = (data) => {
       color: '#F49EBB',
     }
   ]
+
+  return percent_data;
+}
+
+// ロード処理
+const load = (data) => {
+  const percent_data = getPercentData(data);
+  createCard
   displayPercent(percent_data); // パーセント表示
   displayProgressBar(percent_data); // プログレスバー表示
   displayWeek(); // 1週間の表示
-}
-
-const getPercentData = (data) => {
-  const section_ids = {
-    first_section: 1,
-    second_section: 2,
-    third_section: 3,
-    fourth_section: 4
-  }
-  const first_section_items = data.filter(data => data.section_id === section_ids.first_section);
-  const second_section_items = data.filter(data => data.section_id === section_ids.second_section);
-  const third_section_items = data.filter(data => data.section_id === section_ids.third_section);
-  const fourth_section_items = data.filter(data => data.section_id === section_ids.fourth_section);
-  const section_items = {
-    first_section: first_section_items,
-    second_section: second_section_items,
-    third_section: third_section_items,
-    fourth_section: fourth_section_items
-  };
-
-  // パーセント表示
-  const first_percent = calcPercent(data, section_items.first_section);
-  const second_percent = calcPercent(data, section_items.second_section);
-  const third_percent = calcPercent(data, section_items.third_section);
-  const fourth_percent = calcPercent(data, section_items.fourth_section);
-  const percent_data = [
-    {
-      section_id: 1,
-      section_percent: first_percent,
-      color: '#6D5DD6',
-    },
-    {
-      section_id: 2,
-      section_percent: second_percent,
-      color: '#7CB678',
-    },
-    {
-      section_id: 3,
-      section_percent: third_percent,
-      color: '#FFD272',
-    },
-    {
-      section_id: 4,
-      section_percent: fourth_percent,
-      color: '#F49EBB',
-    }
-  ]
-
-  return percent_data;
 }
 
 const calcPercent = (data, section_data) => {
