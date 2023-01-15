@@ -190,7 +190,7 @@ const createCard = (section_data, section_id) => {
     $new_card.attr('id', 'todoCard' + data.id);
     $textarea.attr('id', 'todoTextArea' + data.id);
     $textarea.val(data.content);
-    $todo_add_btn.before($new_card);
+    $todo_add_btn.siblings('.todo__items').append($new_card);
   });
 }
 
@@ -268,7 +268,7 @@ const addCard = (db, $todo_add_btns) => {
     $card.attr('id', 'todoCard' + (last_task_id + 1));
     $card.css('display', 'none');
     $textarea.attr('id', 'todoTextArea' + (last_task_id + 1));
-    $(this).before($card);
+    $(this).siblings('.todo__items').append($card);
     $card.fadeIn(fade_in_speed);
     $textarea.focus();
   });
