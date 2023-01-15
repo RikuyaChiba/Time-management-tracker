@@ -68,7 +68,17 @@ a {
 /* ========= DASHBOARD ======== */
 
 .dashboard {
-  margin-top: var(--page-margin-top);
+  position: relative;
+}
+
+.dashboard__canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 2rem;
+  height: 100vh;
 }
 
 .todo__section-header {
@@ -84,7 +94,9 @@ a {
   border-radius: 20px;
 }
 
-.todo__item {
+.todo__container {
+  position: relative;
+  max-height: 580px;
   padding-top: 1rem;
   border-radius: 5px;
   color: var(--color-text-gray);
@@ -92,12 +104,17 @@ a {
   transition: 0.3s;
 }
 
-.todo__item:hover {
+.todo__container:hover {
   background-color: var(--color-light-lavender);
 }
 
 .todo__header {
   margin: 0 1rem;
+}
+
+.todo__items {
+  max-height: 500px;
+  overflow-y: scroll;
 }
 
 .todo__card {
