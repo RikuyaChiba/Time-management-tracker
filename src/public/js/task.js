@@ -104,6 +104,10 @@ const getThisWeekDate = () => {
   return this_week;
 }
 
+const formatDate = (date) => {
+  return `${date.year}-${date.month}-${date.day} ${date.hours}:${date.minutes}:${date.seconds}`;
+}
+
 // 1週間の日付を取得
 const formatWeek = (data) => {
   return `${data.start_date.year}-${data.start_date.month}-${data.start_date.date} ~ ${data.end_date.year}-${data.end_date.month}-${data.end_date.date}`;
@@ -290,12 +294,29 @@ const saveTask = (db) => {
     // Get task data to store db
     const $section_id = $(this).closest("[id *= 'quadrantSection']").data('section');
     const $content = $todo_textarea.val();
-    const today = (new Date()).toString(); // Date型の状態だとDBに保存できないので、String型に変換
+    const today = new Date(); // Date型の状態だとDBに保存できないので、String型に変換
+    const year = today.getFullYear();
+    const month = toDoubleDigits(today.getMonth() + 1);
+    const day = toDoubleDigits(today.getDate());
+    const hours = toDoubleDigits(today.getHours());
+    const minutes = toDoubleDigits(today.getMinutes());
+    const seconds = toDoubleDigits(today.getSeconds());
+
+    const date = {
+      year: year,
+      month: month,
+      day: day,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds
+    }
+
+    const format_date = formatDate(date);
 
     const attributes = {
       section_id: $section_id,
       content: $content,
-      created_at: today
+      created_at: format_date
     };
 
     // Store date into firebase db
