@@ -11,16 +11,22 @@ const section_ids = {
   fourth_section: 4
 }
 
-const  task_ref = ref(db, 'tasks/');
+const task_ref = ref(db, 'tasks/');
 
-const setData = async (db, task_id, attributes) => {
+// データを保存
+const setData = async (task_id, attributes) => {
   return new Promise((resolve) => {
     set(ref(db, 'tasks/' + task_id), attributes)
     resolve();
   });
 }
 
-// 特定テーブルのコンテンツを配列として取得
+// データを削除
+const deleteData = (task_id) => {
+  remove(ref(db, 'tasks/' + task_id));
+}
+
+// データを取得
 const getRefData = async () => {
   return new Promise(resolve => {
     onValue(task_ref, async (snapshot) => {
@@ -36,7 +42,7 @@ const getRefData = async () => {
           content: `task1`,
           created_at: (new Date()).toString()
         };
-        await setData(db, 1, attributes);
+        await setData(1, attributes);
       }
       // NOTE: DBにはないemptyの値が入ってしまうので、emptyを排除する形で暫定対応
       let filter_data = data.filter(Boolean);
@@ -111,30 +117,6 @@ const displayWeek = () => {
   target_element.html(format_week);
 }
 
-// DBに存在するデータを表示するためのカードを作成する
-const createCard = (section_data, section_id) => {
-  const $todo_add_btn = $("#todoAddButton" + section_id);
-  section_data.map((data) => {
-    const $new_card = $(
-      `<div class="todo__card card">
-        <div class="card-body">
-          <div class="todo__trash-icon d-flex justify-content-end mb-1">
-            <span class="material-symbols-outlined">delete</span>
-          </div>
-          <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
-        </div>
-      </div>`
-    );
-    const $trash = $($new_card).find('span');
-    const $textarea = $($new_card).find('textarea');
-    $trash.attr('id', 'trashIcon' + data.id);
-    $new_card.attr('id', 'todoCard' + data.id);
-    $textarea.attr('id', 'todoTextArea' + data.id);
-    $textarea.val(data.content);
-    $todo_add_btn.before($new_card);
-  });
-}
-
 const getSectionItems = (data) => {
   const first_section_items = data.filter(data => data.section_id === section_ids.first_section);
   const second_section_items = data.filter(data => data.section_id === section_ids.second_section);
@@ -147,6 +129,12 @@ const getSectionItems = (data) => {
     fourth_section: fourth_section_items
   };
   return section_items;
+}
+
+const calcPercent = (data, section_data) => {
+  let percent = (section_data.length / data.length) * 100;
+  let rounded_percent = Math.round(percent);
+  return rounded_percent;
 }
 
 const getPercentData = (data) => {
@@ -182,24 +170,28 @@ const getPercentData = (data) => {
   return percent_data;
 }
 
-// ロード処理
-const load = (data) => {
-  const percent_data = getPercentData(data);
-  // 領域のデータの個数だけ、領域にカードを作成する
-  const section_items = getSectionItems(data);
-  createCard(section_items.first_section, section_ids.first_section);
-  createCard(section_items.second_section, section_ids.second_section);
-  createCard(section_items.third_section, section_ids.third_section);
-  createCard(section_items.fourth_section, section_ids.fourth_section);
-  displayPercent(percent_data); // パーセント表示
-  displayProgressBar(percent_data); // プログレスバー表示
-  displayWeek(); // 1週間の表示
-}
-
-const calcPercent = (data, section_data) => {
-  let percent = (section_data.length / data.length) * 100;
-  let rounded_percent = Math.round(percent);
-  return rounded_percent;
+// DBに存在するデータを表示するためのカードを作成する
+const createCard = (section_data, section_id) => {
+  const $todo_add_btn = $("#todoAddButton" + section_id);
+  section_data.map((data) => {
+    const $new_card = $(
+      `<div class="todo__card card">
+        <div class="card-body">
+          <div class="todo__trash-icon d-flex justify-content-end mb-1">
+            <span class="material-symbols-outlined">delete</span>
+          </div>
+          <textarea class="todo__textarea form-control border-0" rows="3" placeholder="Task title"></textarea>
+        </div>
+      </div>`
+    );
+    const $trash = $($new_card).find('span');
+    const $textarea = $($new_card).find('textarea');
+    $trash.attr('id', 'trashIcon' + data.id);
+    $new_card.attr('id', 'todoCard' + data.id);
+    $textarea.attr('id', 'todoTextArea' + data.id);
+    $textarea.val(data.content);
+    $todo_add_btn.before($new_card);
+  });
 }
 
 const displayPercent = (percent_data) => {
@@ -229,53 +221,21 @@ const displayProgressBar = (percent_data) => {
   });
 }
 
-const saveTask = (db) => {
-  $(document).on("keydown", "textarea", async function(e) {
-    // エンターキーが押されたときには、テキストエリアをフォーカスアウトする
-    const enter_key_code = 13;
-    if (e.keyCode === enter_key_code) {
-      const focused = $(':focus');
-      focused.blur();
-    }
-    const $clicked_element_id = $(this).attr('id');
-    const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
-    const $todo_textarea = $('#todoTextArea' + task_id);
-
-    // Get task data to store db
-    const $section_id = $(this).closest("[id *= 'quadrantSection']").data('section');
-    const $content = $todo_textarea.val();
-    const today = (new Date()).toString(); // Date型の状態だとDBに保存できないので、String型に変換
-
-    const attributes = {
-      section_id: $section_id,
-      content: $content,
-      created_at: today
-    };
-
-    // Store date into firebase db
-    setData(db, task_id, attributes);
-  });
-}
-
-const refreshPercent = async (percent_data) => {
-  displayPercent(percent_data); // パーセント情報を更新
-  displayProgressBar(percent_data); // プログレスバー情報を更新
-}
-
-$(document).on('blur focusout', async function(e) {
-  // テキストエリアが未入力のとき
-  if(!$(e.target).val()) {
-    // カードを削除
-    let $card = $(e.target).closest('.card');
-    $card.remove();
-    return;
-  }
-
-  const data = await getRefData();
+// ロード処理
+const load = (data) => {
   const percent_data = getPercentData(data);
-  refreshPercent(percent_data);
-})
+  // 領域のデータの個数だけ、領域にカードを作成する
+  const section_items = getSectionItems(data);
+  createCard(section_items.first_section, section_ids.first_section);
+  createCard(section_items.second_section, section_ids.second_section);
+  createCard(section_items.third_section, section_ids.third_section);
+  createCard(section_items.fourth_section, section_ids.fourth_section);
+  displayPercent(percent_data); // パーセント表示
+  displayProgressBar(percent_data); // プログレスバー表示
+  displayWeek(); // 1週間の表示
+}
 
+// 最新のタスクのidを取得
 const getLastTaskId = async () => {
   return new Promise(resolve => {
     onValue(task_ref, async (snapshot) => {
@@ -286,6 +246,7 @@ const getLastTaskId = async () => {
   });
 }
 
+// カードを追加
 const addCard = (db, $todo_add_btns) => {
   $todo_add_btns.click(async function() {
     // taskテーブルの最新のidを取得
@@ -310,22 +271,65 @@ const addCard = (db, $todo_add_btns) => {
     $(this).before($card);
     $card.fadeIn(fade_in_speed);
     $textarea.focus();
-
-    // NOTE: テキストエリアを新しく作ったので、テキストエリア,ボタンの変数情報を最新情報にする
-    deleteCard(db);
   });
 }
 
-const deleteData = (db, task_id) => {
-  remove(ref(db, 'tasks/' + task_id));
+// 追加されたタスクをDBに保存
+const saveTask = (db) => {
+  $(document).on("keydown", "textarea", async function(e) {
+    // エンターキーが押されたときには、テキストエリアをフォーカスアウトする
+    const enter_key_code = 13;
+    if (e.keyCode === enter_key_code) {
+      const focused = $(':focus');
+      focused.blur();
+    }
+    const $clicked_element_id = $(this).attr('id');
+    const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
+    const $todo_textarea = $('#todoTextArea' + task_id);
+
+    // Get task data to store db
+    const $section_id = $(this).closest("[id *= 'quadrantSection']").data('section');
+    const $content = $todo_textarea.val();
+    const today = (new Date()).toString(); // Date型の状態だとDBに保存できないので、String型に変換
+
+    const attributes = {
+      section_id: $section_id,
+      content: $content,
+      created_at: today
+    };
+
+    // Store date into firebase db
+    setData(task_id, attributes);
+  });
 }
 
-const deleteCard = (db) => {
-  const trash__icons = $("[id *= 'trashIcon']");
-  trash__icons.click(function() {
-    let $parent = $(this).parents(".todo__card");
-    let $textarea = $parent.find('textarea');
+// パーセント・プログレスバー情報を更新
+const refreshPercent = async (percent_data) => {
+  displayPercent(percent_data);
+  displayProgressBar(percent_data);
+}
+
+$(document).on('blur focusout', async function(e) {
+  // テキストエリアが未入力のとき
+  if(!$(e.target).val()) {
+    // カードを削除
+    let $card = $(e.target).closest('.card');
+    $card.remove();
+    return;
+  }
+
+  const data = await getRefData();
+  const percent_data = getPercentData(data);
+  refreshPercent(percent_data);
+})
+
+const deleteTask = () => {
+  $(document).on('click', '.todo__trash-icon', function() {
+    const $parent = $(this).closest(".todo__card");
+    const $clicked_element_id = $parent.attr('id');
+    const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
     $parent.remove();
+    deleteData(task_id);
   });
 }
 
@@ -335,7 +339,7 @@ const runAsync = async (db, $todo_add_btns) => {
     load(data);
     saveTask(db);
     addCard(db, $todo_add_btns);
-    deleteCard(db);
+    deleteTask();
   } catch(err) {
     console.log(err);
   }
