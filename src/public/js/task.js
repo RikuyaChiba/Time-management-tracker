@@ -75,10 +75,10 @@ const getThisWeekDate = () => {
   }
   const this_sunday = this_monday + 6;
   // 月曜日の年月日
-  const start_date = new Date(year, month, this_monday);
+  const start_date = new Date(year, month, this_monday, 23, 59, 59, 59);
   const start_date_day = start_date.getDate();
   // 日曜日の年月日
-  const end_date = new Date(year, month, this_sunday);
+  const end_date = new Date(year, month, this_sunday, 23, 59, 59, 59);
   const end_date_day = end_date.getDate();
 
   const this_week = {
@@ -135,7 +135,7 @@ const createCard = (section_data, section_id) => {
   });
 }
 
-const getPercentData = (data) => {
+const getSectionItems = (data) => {
   const first_section_items = data.filter(data => data.section_id === section_ids.first_section);
   const second_section_items = data.filter(data => data.section_id === section_ids.second_section);
   const third_section_items = data.filter(data => data.section_id === section_ids.third_section);
@@ -146,12 +146,11 @@ const getPercentData = (data) => {
     third_section: third_section_items,
     fourth_section: fourth_section_items
   };
-  // 領域のデータの個数だけ、領域にカードを作成する
-  createCard(section_items.first_section, section_ids.first_section);
-  createCard(section_items.second_section, section_ids.second_section);
-  createCard(section_items.third_section, section_ids.third_section);
-  createCard(section_items.fourth_section, section_ids.fourth_section);
+  return section_items;
+}
 
+const getPercentData = (data) => {
+  const section_items = getSectionItems(data);
   // パーセント表示
   const first_percent = calcPercent(data, section_items.first_section);
   const second_percent = calcPercent(data, section_items.second_section);
@@ -186,6 +185,12 @@ const getPercentData = (data) => {
 // ロード処理
 const load = (data) => {
   const percent_data = getPercentData(data);
+  // 領域のデータの個数だけ、領域にカードを作成する
+  const section_items = getSectionItems(data);
+  createCard(section_items.first_section, section_ids.first_section);
+  createCard(section_items.second_section, section_ids.second_section);
+  createCard(section_items.third_section, section_ids.third_section);
+  createCard(section_items.fourth_section, section_ids.fourth_section);
   displayPercent(percent_data); // パーセント表示
   displayProgressBar(percent_data); // プログレスバー表示
   displayWeek(); // 1週間の表示
@@ -252,15 +257,26 @@ const saveTask = (db) => {
   });
 }
 
-const refreshPercent = async () => {
-  const data = await getRefData();
-  const percent_data = getPercentData(data);
+const refreshPercent = async (percent_data) => {
   displayPercent(percent_data); // パーセント情報を更新
   displayProgressBar(percent_data); // プログレスバー情報を更新
 }
 
+// カードを作成するとき
+// loadしたとき
+// focusアウトしたとき,1まい作成
+
 $(document).on('load', async function() {
-  refreshPercent();
+  const data = await getRefData();
+  const percent_data = getPercentData(data);
+  refreshPercent(percent_data);
+
+  // 領域のデータの個数だけ、領域にカードを作成する
+  const section_items = getSectionItems(data);
+  createCard(section_items.first_section, section_ids.first_section);
+  createCard(section_items.second_section, section_ids.second_section);
+  createCard(section_items.third_section, section_ids.third_section);
+  createCard(section_items.fourth_section, section_ids.fourth_section);
 })
 
 $(document).on('blur focusout', async function(e) {
@@ -272,7 +288,9 @@ $(document).on('blur focusout', async function(e) {
     return;
   }
 
-  refreshPercent();
+  const data = await getRefData();
+  const percent_data = getPercentData(data);
+  refreshPercent(percent_data);
 })
 
 const getLastTaskId = async () => {
