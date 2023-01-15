@@ -11,6 +11,8 @@ const section_ids = {
   fourth_section: 4
 }
 
+const  task_ref = ref(db, 'tasks/');
+
 const setData = async (db, task_id, attributes) => {
   return new Promise((resolve) => {
     set(ref(db, 'tasks/' + task_id), attributes)
@@ -20,10 +22,12 @@ const setData = async (db, task_id, attributes) => {
 
 // 特定テーブルのコンテンツを配列として取得
 const getRefData = async () => {
-  let task_ref = ref(db, 'tasks/');
   return new Promise(resolve => {
     onValue(task_ref, async (snapshot) => {
       const data = snapshot.val();
+      data.forEach((element, index) => {
+        element.id = index;
+      });
 
       // データがない場合の処理
       if (data === null) {
@@ -43,10 +47,6 @@ const getRefData = async () => {
       filter_data = filter_data.filter((data) => {
         const parse_created_at = Date.parse(data.created_at);
         return (parse_created_at >= parse_start_date) && (parse_created_at <= parse_end_date);
-      });
-      // idを付与
-      filter_data.map((data, index) => {
-        data.id = index + 1;
       });
       resolve(filter_data);
     });
@@ -68,7 +68,11 @@ const getThisWeekDate = () => {
   const month = today.getMonth();
   const date = today.getDate();
   const day_num = today.getDay();
-  const this_monday = date - day_num + 1;
+  let this_monday = date - day_num + 1;
+  const sunday = 0;
+  if (day_num === sunday) {
+    this_monday -= 7;
+  }
   const this_sunday = this_monday + 6;
   // 月曜日の年月日
   const start_date = new Date(year, month, this_monday);
@@ -182,7 +186,6 @@ const getPercentData = (data) => {
 // ロード処理
 const load = (data) => {
   const percent_data = getPercentData(data);
-  createCard
   displayPercent(percent_data); // パーセント表示
   displayProgressBar(percent_data); // プログレスバー表示
   displayWeek(); // 1週間の表示
@@ -234,7 +237,7 @@ const saveTask = (db) => {
     const $todo_textarea = $('#todoTextArea' + task_id);
 
     // Get task data to store db
-    const $section_id = $(this).parents("[id *= 'quadrantSection']").data('section');
+    const $section_id = $(this).closest("[id *= 'quadrantSection']").data('section');
     const $content = $todo_textarea.val();
     const today = (new Date()).toString(); // Date型の状態だとDBに保存できないので、String型に変換
 
@@ -245,7 +248,7 @@ const saveTask = (db) => {
     };
 
     // Store date into firebase db
-    set(ref(db, 'tasks/' + task_id), attributes);
+    setData(db, task_id, attributes);
   });
 }
 
@@ -272,10 +275,20 @@ $(document).on('blur focusout', async function(e) {
   refreshPercent();
 })
 
+const getLastTaskId = async () => {
+  return new Promise(resolve => {
+    onValue(task_ref, async (snapshot) => {
+      const data = snapshot.val();
+      const last_task_id = Object.keys(data).pop();
+      resolve(last_task_id);
+    });
+  });
+}
+
 const addCard = (db, $todo_add_btns) => {
-  $todo_add_btns.click(function() {
+  $todo_add_btns.click(async function() {
     // taskテーブルの最新のidを取得
-    const last_card_id = $("[id *= 'todoCard']").length;
+    const last_task_id = parseInt(await getLastTaskId());
     const $card = $(
       `<div class="todo__card card">
         <div class="card-body">
@@ -289,10 +302,10 @@ const addCard = (db, $todo_add_btns) => {
     const $trash = $($card).find('span');
     const $textarea = $($card).find('textarea');
     const fade_in_speed = 700;
-    $trash.attr('id', 'trashIcon' + (last_card_id + 1));
-    $card.attr('id', 'todoCard' + (last_card_id + 1));
+    $trash.attr('id', 'trashIcon' + (last_task_id + 1));
+    $card.attr('id', 'todoCard' + (last_task_id + 1));
     $card.css('display', 'none');
-    $textarea.attr('id', 'todoTextArea' + (last_card_id + 1));
+    $textarea.attr('id', 'todoTextArea' + (last_task_id + 1));
     $(this).before($card);
     $card.fadeIn(fade_in_speed);
     $textarea.focus();
