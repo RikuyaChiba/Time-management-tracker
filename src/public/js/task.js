@@ -304,7 +304,7 @@ const saveTask = (db) => {
 }
 
 // パーセント・プログレスバー情報を更新
-const refreshPercent = async (percent_data) => {
+const refreshPercent = (percent_data) => {
   displayPercent(percent_data);
   displayProgressBar(percent_data);
 }
@@ -324,12 +324,16 @@ $(document).on('blur focusout', async function(e) {
 })
 
 const deleteTask = () => {
-  $(document).on('click', '.todo__trash-icon', function() {
+  $(document).on('click', '.todo__trash-icon', async function() {
     const $parent = $(this).closest(".todo__card");
     const $clicked_element_id = $parent.attr('id');
     const task_id = $clicked_element_id.replace(/[^0-9]/g, ''); // idの番号のみを取り出す
     $parent.remove();
     deleteData(task_id);
+
+    const data = await getRefData();
+    const percent_data = getPercentData(data);
+    refreshPercent(percent_data);
   });
 }
 
