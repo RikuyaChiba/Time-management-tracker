@@ -262,23 +262,6 @@ const refreshPercent = async (percent_data) => {
   displayProgressBar(percent_data); // プログレスバー情報を更新
 }
 
-// カードを作成するとき
-// loadしたとき
-// focusアウトしたとき,1まい作成
-
-$(document).on('load', async function() {
-  const data = await getRefData();
-  const percent_data = getPercentData(data);
-  refreshPercent(percent_data);
-
-  // 領域のデータの個数だけ、領域にカードを作成する
-  const section_items = getSectionItems(data);
-  createCard(section_items.first_section, section_ids.first_section);
-  createCard(section_items.second_section, section_ids.second_section);
-  createCard(section_items.third_section, section_ids.third_section);
-  createCard(section_items.fourth_section, section_ids.fourth_section);
-})
-
 $(document).on('blur focusout', async function(e) {
   // テキストエリアが未入力のとき
   if(!$(e.target).val()) {
