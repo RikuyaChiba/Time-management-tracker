@@ -31,10 +31,6 @@ const getRefData = async () => {
   return new Promise(resolve => {
     onValue(task_ref, async (snapshot) => {
       const data = snapshot.val();
-      data.forEach((element, index) => {
-        element.id = index;
-      });
-
       // データがない場合の処理
       if (data === null) {
         const attributes = {
@@ -44,6 +40,11 @@ const getRefData = async () => {
         };
         await setData(1, attributes);
       }
+
+      data.forEach((element, index) => {
+        element.id = index;
+      });
+
       // NOTE: DBにはないemptyの値が入ってしまうので、emptyを排除する形で暫定対応
       let filter_data = data.filter(Boolean);
       const this_week = getThisWeekDate();
@@ -81,10 +82,10 @@ const getThisWeekDate = () => {
   }
   const this_sunday = this_monday + 6;
   // 月曜日の年月日
-  const start_date = new Date(year, month, this_monday, 23, 59, 59, 59);
+  const start_date = new Date(year, month, this_monday, 0, 0, 0);
   const start_date_day = start_date.getDate();
   // 日曜日の年月日
-  const end_date = new Date(year, month, this_sunday, 23, 59, 59, 59);
+  const end_date = new Date(year, month, this_sunday, 23, 59, 59);
   const end_date_day = end_date.getDate();
 
   const this_week = {
