@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\ApiDisplayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,3 +19,4 @@ use App\Http\Controllers\StatisticsController;
 
 Route::get('/', [DashBoardController::class, 'index'])->name('dashboard');
 Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics');
+Route::get('/api_display', [ApiDisplayController::class, 'index'])->name('api_display');
